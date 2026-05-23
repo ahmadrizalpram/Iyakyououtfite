@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — iyakyou outfit</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root { --cream: #f5f0e8; --dark: #1a1208; --brown: #6b4c2a; --gold: #c9933a; --soft: #e8dfd0; --danger: #d4573c; --green: #3c8c5a; }
+    body { background: var(--dark); color: var(--cream); font-family: 'DM Sans', sans-serif; min-height: 100vh; padding-bottom: 60px; }
+    #loginGate { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+    .login-box { background: rgba(255,255,255,0.04); border: 1px solid rgba(201,147,58,0.2); border-radius: 24px; padding: 40px 32px; width: 100%; max-width: 360px; text-align: center; }
+    .login-logo { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 900; color: var(--gold); margin-bottom: 6px; }
+    .login-logo span { font-style: italic; color: var(--cream); }
+    .login-sub { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--brown); margin-bottom: 32px; }
+    .login-label { font-size: 11px; text-align: left; color: var(--brown); margin-bottom: 6px; letter-spacing: 1px; text-transform: uppercase; display: block; }
+    .login-input { width: 100%; padding: 14px 16px; background: rgba(255,255,255,0.06); border: 1px solid rgba(201,147,58,0.2); border-radius: 12px; color: var(--cream); font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none; margin-bottom: 20px; transition: border-color 0.2s; }
+    .login-input:focus { border-color: var(--gold); }
+    .login-btn { width: 100%; padding: 15px; background: linear-gradient(135deg, var(--gold), #a8732a); color: white; border: none; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
+    .login-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(201,147,58,0.3); }
+    .login-error { color: var(--danger); font-size: 12px; margin-top: 12px; display: none; }
+    #adminPanel { display: none; }
+    .admin-header { background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(201,147,58,0.15); padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; }
+    .admin-brand { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 900; color: var(--gold); }
+    .admin-brand span { font-style: italic; color: var(--cream); }
+    .admin-tag { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: var(--brown); display: block; margin-top: 2px; }
+    .logout-btn { font-size: 11px; color: var(--brown); background: none; border: 1px solid rgba(107,76,42,0.3); border-radius: 20px; padding: 6px 14px; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.2s; }
+    .logout-btn:hover { border-color: var(--danger); color: var(--danger); }
+    .admin-body { padding: 28px 20px; max-width: 520px; margin: 0 auto; }
+    .section-title { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); margin-bottom: 16px; font-weight: 500; }
+    .add-form { background: rgba(255,255,255,0.04); border: 1px solid rgba(201,147,58,0.15); border-radius: 20px; padding: 24px; margin-bottom: 32px; }
+    .form-group { margin-bottom: 16px; }
+    .form-label { font-size: 11px; color: var(--brown); display: block; margin-bottom: 6px; letter-spacing: 1px; text-transform: uppercase; }
+    .form-row { display: grid; grid-template-columns: 80px 1fr; gap: 12px; }
+    .form-input { width: 100%; padding: 13px 16px; background: rgba(255,255,255,0.06); border: 1px solid rgba(201,147,58,0.15); border-radius: 12px; color: var(--cream); font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none; transition: border-color 0.2s; }
+    .form-input:focus { border-color: var(--gold); }
+    .form-input::placeholder { color: rgba(107,76,42,0.5); }
+    .add-btn { width: 100%; padding: 15px; background: linear-gradient(135deg, var(--gold), #a8732a); color: white; border: none; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .add-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(201,147,58,0.3); }
+    .product-list { display: flex; flex-direction: column; gap: 12px; }
+    .empty-admin { text-align: center; padding: 40px 20px; color: var(--brown); font-size: 13px; line-height: 1.8; background: rgba(255,255,255,0.02); border-radius: 16px; border: 1px dashed rgba(107,76,42,0.3); }
+    .empty-admin span { font-size: 28px; display: block; margin-bottom: 10px; }
+    .product-item { background: rgba(255,255,255,0.04); border: 1px solid rgba(201,147,58,0.12); border-radius: 16px; padding: 16px 18px; display: flex; align-items: center; gap: 14px; animation: slideIn 0.3s ease; }
+    @keyframes slideIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+    .item-number { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; color: var(--gold); min-width: 36px; text-align: center; }
+    .item-info { flex: 1; min-width: 0; }
+    .item-name { font-size: 14px; font-weight: 500; color: var(--cream); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .item-url { font-size: 11px; color: var(--brown); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
+    .item-actions { display: flex; gap: 8px; flex-shrink: 0; }
+    .btn-edit, .btn-delete { width: 32px; height: 32px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; }
+    .btn-edit { background: rgba(201,147,58,0.15); }
+    .btn-edit:hover { background: var(--gold); }
+    .btn-delete { background: rgba(212,87,60,0.15); }
+    .btn-delete:hover { background: var(--danger); }
+    .btn-edit svg, .btn-delete svg { width: 14px; height: 14px; }
+    .btn-edit svg { stroke: var(--gold); }
+    .btn-edit:hover svg { stroke: white; }
+    .btn-delete svg { stroke: var(--danger); }
+    .btn-delete:hover svg { stroke: white; }
+    .move-btns { display: flex; flex-direction: column; gap: 4px; }
+    .btn-move { width: 28px; height: 28px; border-radius: 8px; border: 1px solid rgba(201,147,58,0.2); background: none; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+    .btn-move:hover { background: rgba(201,147,58,0.15); border-color: var(--gold); }
+    .btn-move svg { width: 12px; height: 12px; stroke: var(--brown); }
+    .btn-move:hover svg { stroke: var(--gold); }
+    .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--dark); color: var(--cream); border: 1px solid rgba(201,147,58,0.3); padding: 12px 24px; border-radius: 20px; font-size: 13px; z-index: 9999; transition: transform 0.3s ease; white-space: nowrap; }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast.error { border-color: var(--danger); }
+    .edit-overlay { position: fixed; inset: 0; background: rgba(26,18,8,0.8); backdrop-filter: blur(6px); z-index: 1000; display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+    .edit-overlay.active { opacity: 1; pointer-events: all; }
+    .edit-modal { background: #231a0e; border-radius: 28px 28px 0 0; padding: 32px 24px 48px; width: 100%; max-width: 520px; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.23,1,0.32,1); }
+    .edit-overlay.active .edit-modal { transform: translateY(0); }
+    .edit-handle { width: 36px; height: 4px; background: rgba(201,147,58,0.2); border-radius: 2px; margin: 0 auto 24px; }
+    .edit-title { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; }
+    .save-btn { width: 100%; padding: 15px; background: linear-gradient(135deg, var(--gold), #a8732a); color: white; border: none; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; margin-top: 8px; }
+    .cancel-edit { display: block; text-align: center; padding: 12px; color: var(--brown); font-size: 12px; cursor: pointer; }
+    .preview-link { display: flex; align-items: center; gap: 8px; background: rgba(60,140,90,0.1); border: 1px solid rgba(60,140,90,0.25); border-radius: 12px; padding: 14px 16px; margin-bottom: 28px; text-decoration: none; }
+    .preview-link span { font-size: 12px; color: #3c8c5a; flex: 1; }
+    .preview-link svg { width: 16px; height: 16px; stroke: #3c8c5a; flex-shrink: 0; }
+  </style>
+</head>
+<body>
+  <div id="loginGate">
+    <div class="login-box">
+      <div class="login-logo">iyak<span>you</span></div>
+      <div class="login-sub">Admin Panel</div>
+      <label class="login-label">Password</label>
+      <input type="password" class="login-input" id="loginInput" placeholder="Masukkan password..." onkeydown="if(event.key==='Enter') doLogin()" />
+      <button class="login-btn" onclick="doLogin()">Masuk →</button>
+      <div class="login-error" id="loginError">Password salah. Coba lagi!</div>
+    </div>
+  </div>
+
+  <div id="adminPanel">
+    <div class="admin-header">
+      <div>
+        <div class="admin-brand">iyak<span>you</span></div>
+        <span class="admin-tag">Admin Panel</span>
+      </div>
+      <button class="logout-btn" onclick="doLogout()">Keluar</button>
+    </div>
+    <div class="admin-body">
+      <a href="index.html" target="_blank" class="preview-link">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        <span>Lihat tampilan website publik →</span>
+      </a>
+      <div class="section-title">+ Tambah Produk Baru</div>
+      <div class="add-form">
+        <div class="form-group">
+          <div class="form-row">
+            <div>
+              <label class="form-label">No.</label>
+              <input type="number" class="form-input" id="inputNumber" placeholder="01" min="1" />
+            </div>
+            <div>
+              <label class="form-label">Nama Produk</label>
+              <input type="text" class="form-input" id="inputName" placeholder="cth: Kemeja Flanel" />
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Link Shopee</label>
+          <input type="url" class="form-input" id="inputUrl" placeholder="https://shopee.co.id/..." />
+        </div>
+        <button class="add-btn" onclick="addProduct()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          Tambah Produk
+        </button>
+      </div>
+      <div class="section-title">📦 Produk Aktif</div>
+      <div class="product-list" id="adminProductList"></div>
+    </div>
+  </div>
+
+  <div class="edit-overlay" id="editOverlay">
+    <div class="edit-modal">
+      <div class="edit-handle"></div>
+      <div class="edit-title">✏️ Edit Produk</div>
+      <input type="hidden" id="editIndex" />
+      <div class="form-group">
+        <div class="form-row">
+          <div>
+            <label class="form-label">No.</label>
+            <input type="number" class="form-input" id="editNumber" min="1" />
+          </div>
+          <div>
+            <label class="form-label">Nama Produk</label>
+            <input type="text" class="form-input" id="editName" />
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Link Shopee</label>
+        <input type="url" class="form-input" id="editUrl" />
+      </div>
+      <button class="save-btn" onclick="saveEdit()">Simpan Perubahan</button>
+      <span class="cancel-edit" onclick="closeEdit()">Batalkan</span>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const STORAGE_KEY = 'iyakyou_products';
+    const ADMIN_PASS = 'iyakyou2025';
+
+    function doLogin() {
+      const val = document.getElementById('loginInput').value;
+      if (val === ADMIN_PASS) {
+        document.getElementById('loginGate').style.display = 'none';
+        document.getElementById('adminPanel').style.display = 'block';
+        renderAdmin();
+      } else {
+        document.getElementById('loginError').style.display = 'block';
+        document.getElementById('loginInput').value = '';
+      }
+    }
+    function doLogout() {
+      document.getElementById('adminPanel').style.display = 'none';
+      document.getElementById('loginGate').style.display = 'flex';
+      document.getElementById('loginInput').value = '';
+    }
+    function getProducts() {
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch { return []; }
+    }
+    function saveProducts(arr) { localStorage.setItem(STORAGE_KEY, JSON.stringify(arr)); }
+    function showToast(msg, type='success') {
+      const t = document.getElementById('toast');
+      t.textContent = msg; t.className = 'toast '+type+' show';
+      setTimeout(() => { t.className = 'toast '+type; }, 2500);
+    }
+    function renderAdmin() {
+      const products = getProducts();
+      const list = document.getElementById('adminProductList');
+      list.innerHTML = '';
+      if (products.length === 0) {
+        list.innerHTML = '<div class="empty-admin"><span>📭</span>Belum ada produk.<br>Tambahkan produk pertamamu di atas!</div>';
+        return;
+      }
+      products.forEach((p, i) => {
+        const num = String(p.number || (i+1)).padStart(2,'0');
+        const item = document.createElement('div');
+        item.className = 'product-item';
+        item.innerHTML = '<div class="move-btns"><button class="btn-move" onclick="moveUp('+i+')"'+(i===0?' style="opacity:0.3;pointer-events:none"':'')+' ><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg></button><button class="btn-move" onclick="moveDown('+i+')"'+(i===products.length-1?' style="opacity:0.3;pointer-events:none"':'')+' ><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button></div><div class="item-number">'+num+'</div><div class="item-info"><div class="item-name">'+p.name+'</div><div class="item-url">'+p.url+'</div></div><div class="item-actions"><button class="btn-edit" onclick="openEdit('+i+')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button><button class="btn-delete" onclick="deleteProduct('+i+')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg></button></div>';
+        list.appendChild(item);
+      });
+    }
+    function addProduct() {
+      const number = document.getElementById('inputNumber').value.trim();
+      const name = document.getElementById('inputName').value.trim();
+      const url = document.getElementById('inputUrl').value.trim();
+      if (!name || !url) { showToast('⚠️ Nama & link wajib diisi!', 'error'); return; }
+      if (!url.startsWith('http')) { showToast('⚠️ Link harus diawali https://', 'error'); return; }
+      const products = getProducts();
+      products.push({ number: number || (products.length+1), name, url });
+      saveProducts(products);
+      document.getElementById('inputNumber').value = '';
+      document.getElementById('inputName').value = '';
+      document.getElementById('inputUrl').value = '';
+      renderAdmin();
+      showToast('✅ Produk berhasil ditambahkan!');
+    }
+    function deleteProduct(i) {
+      if (!confirm('Hapus produk ini?')) return;
+      const products = getProducts();
+      products.splice(i, 1);
+      saveProducts(products);
+      renderAdmin();
+      showToast('🗑️ Produk dihapus.');
+    }
+    function moveUp(i) {
+      const products = getProducts();
+      if (i===0) return;
+      [products[i-1], products[i]] = [products[i], products[i-1]];
+      saveProducts(products); renderAdmin();
+    }
+    function moveDown(i) {
+      const products = getProducts();
+      if (i===products.length-1) return;
+      [products[i+1], products[i]] = [products[i], products[i+1]];
+      saveProducts(products); renderAdmin();
+    }
+    function openEdit(i) {
+      const p = getProducts()[i];
+      document.getElementById('editIndex').value = i;
+      document.getElementById('editNumber').value = p.number || (i+1);
+      document.getElementById('editName').value = p.name;
+      document.getElementById('editUrl').value = p.url;
+      document.getElementById('editOverlay').classList.add('active');
+    }
+    function saveEdit() {
+      const i = parseInt(document.getElementById('editIndex').value);
+      const number = document.getElementById('editNumber').value.trim();
+      const name = document.getElementById('editName').value.trim();
+      const url = document.getElementById('editUrl').value.trim();
+      if (!name || !url) { showToast('⚠️ Nama & link wajib diisi!', 'error'); return; }
+      const products = getProducts();
+      products[i] = { number, name, url };
+      saveProducts(products);
+      closeEdit(); renderAdmin();
+      showToast('✅ Produk berhasil diupdate!');
+    }
+    function closeEdit() { document.getElementById('editOverlay').classList.remove('active'); }
+    document.getElementById('editOverlay').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('editOverlay')) closeEdit();
+    });
+  </script>
+</body>
+</html>
